@@ -15,13 +15,13 @@ let south={features:[]
 };
 
 const loadjsonfile = () => {
-  return new Promise(function(res, rej){
+  return new Promise( (res, rej) => {
       res(ljf.sync("./data/vnProv.json"));
   });
 };
 
 loadjsonfile().then( result => {
-    result.features.forEach(function(features){
+    result.features.forEach( features => {
         if(features.properties.parent == southid){
                 south.features.push(features);
         }
@@ -37,7 +37,7 @@ loadjsonfile().then( result => {
     } );
     }
  )
- .then( function() {
+ .then( () => {
        wjf.sync( "./data/southregionmap.json", south, {indent: 2} );
        wjf.sync( "./data/centralregionmap.json", central, {indent: 2} );
        wjf.sync( "./data/highlandregionmap.json", highland, {indent: 2} );
