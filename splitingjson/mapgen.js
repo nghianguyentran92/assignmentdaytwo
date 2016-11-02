@@ -1,18 +1,23 @@
 const ljf = require( "load-json-file" );
 const wjf = require( "write-json-file" );
-const southid = "T6shP0GyRuQ";
-const northid = "JzKStMojAGA";
-const highlandid = "bJ55F4lb3WJ";
-const centralid = "SgkhNupCR4x";
-
-let north={features:[]
-};
-let central={features:[]
-};
-let highland={features:[]
-};
-let south={features:[]
-};
+const regions = [
+    {
+        name: "centralregionmap",
+        id: "SgkhNupCR4x"
+    },
+    {
+        name: "highlandregionmap",
+        id: "bJ55F4lb3WJ"
+    },
+    {
+        name: "northregionmap",
+        id: "JzKStMojAGA"
+    },
+    {
+        name: "southregionmap",
+        id: "T6shP0GyRuQ"
+    }
+]
 
 const loadjsonfile = () => {
   return new Promise( (res, rej) => {
@@ -20,26 +25,29 @@ const loadjsonfile = () => {
   });
 };
 
-loadjsonfile().then( result => {
-    result.features.forEach( features => {
-        if(features.properties.parent == southid){
-                south.features.push(features);
-        }
-        if(features.properties.parent == centralid){
-                central.features.push(features);
-        }
-        if(features.properties.parent == highlandid){
-                highland.features.push(features);
-        }
-        if(features.properties.parent == northid){
-                north.features.push(features);
-        }
-    } );
-    }
- )
- .then( () => {
-       wjf.sync( "./data/southregionmap.json", south, {indent: 2} );
-       wjf.sync( "./data/centralregionmap.json", central, {indent: 2} );
-       wjf.sync( "./data/highlandregionmap.json", highland, {indent: 2} );
-       wjf.sync( "./data/northregionmap.json", north, {indent: 2} );
- } );
+loadjsonfile().then (result => {
+    regions.forEach( regions => {
+            let orgUnitList = {features:[]};
+            orgUnitList.features = result.features.filter( feature => feature.properties.parent === regions.id );
+            jsonCreateFormatAndCreateFile( orgUnitList, regions );
+    });
+}
+)
+
+const jsonCreateFormatAndCreateFile = (data, regions) => {
+  createFile( data.features.map( feature => {
+    return {
+      id: feature.id,
+      coordinates: feature.geometry.coordinates,
+      geometryType: feature.geometry.type,
+      code: feature.properties.code,
+      level: feature.properties.level,
+      name: feature.properties.name,
+	  parent: feature.properties.parent
+    };
+  } ), regions )
+};
+
+const createFile = (features, regions) => {
+	wjf.sync( `./data/${regions.name}.json`, features, {indent: 2} );
+}
