@@ -1,5 +1,6 @@
 const ljf = require( "load-json-file" );
 const wjf = require( "write-json-file" );
+const url = "./data/vnProv.json";
 const regions = [
     {
         name: "centralregionmap",
@@ -21,7 +22,7 @@ const regions = [
 
 const loadjsonfile = () => {
   return new Promise( (res, rej) => {
-      res(ljf.sync("./data/vnProv.json"));
+      res(ljf.sync(url));
   });
 };
 
